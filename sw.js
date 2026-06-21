@@ -5,7 +5,7 @@
    Google Fonts, and any POST/PATCH/DELETE go straight to the network and are
    never cached or intercepted. */
 
-const CACHE = "qarjy-cache-v1";
+const CACHE = "qarjy-cache-v2";
 const SHELL = ["./", "./index.html"];
 
 // Pre-cache the app shell on install

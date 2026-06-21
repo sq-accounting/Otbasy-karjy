@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#2F9E54">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Отбасы қаржысы">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="Отбасы қаржысы — бүкіл отбасыға арналған кіріс, шығын, қарыз, несие, мақсат пен бюджетті бірге жүргізуге арналған қосымша.">
+<meta name="color-scheme" content="light">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <title>Отбасы қаржысы</title>
@@ -861,9 +864,10 @@ function openModal(title,fields,save,del){
   __lastFocus=document.activeElement;
   $("m-title").textContent=title;
   $("m-fields").innerHTML=fields.map(f=>{
-    if(f.type==="select")return `<div class="field"><label>${f.label}</label><select id="f-${f.key}">${f.options.map(o=>`<option value="${esc(o[0])}"${String(o[0])===String(f.val||"")?" selected":""}>${esc(o[1])}</option>`).join("")}</select></div>`;
+    const sv=f.val!==undefined?f.val:(f.def!==undefined?f.def:"");
+    if(f.type==="select")return `<div class="field"><label>${f.label}</label><select id="f-${f.key}">${f.options.map(o=>`<option value="${esc(o[0])}"${String(o[0])===String(sv||"")?" selected":""}>${esc(o[1])}</option>`).join("")}</select></div>`;
     const t=f.type==="number"?'inputmode="decimal"':(f.type==="date"?'type="date"':(f.type==="password"?'type="password"':""));
-    return `<div class="field"><label>${f.label}</label><input ${t} id="f-${f.key}" value="${esc(f.val||"")}" placeholder="${esc(f.ph||"")}"></div>`;
+    return `<div class="field"><label>${f.label}</label><input ${t} id="f-${f.key}" value="${esc(sv||"")}" placeholder="${esc(f.ph||"")}"></div>`;
   }).join("");
   onSave=()=>{const v={};fields.forEach(f=>v[f.key]=$("f-"+f.key).value);save(v);};
   onDel=del||null;$("m-del").style.display=del?"":"none";
@@ -932,7 +936,7 @@ function renderDash(){
   $("dash-cards").innerHTML=`
     <div class="scard"><div class="lab">${t("c_inc")}</div><div class="val pos">${fmt(incM)}</div></div>
     <div class="scard"><div class="lab">${t("c_exp")}</div><div class="val neg">${fmt(expM)}</div></div>
-    <div class="scard full hl"><div class="lab">${lang==="ru"?"Остаток за месяц (доход − расход)":"Осы айғы қалдық (кіріс − шығын)"}</div><div class="val">${fmt(bal)}</div></div>
+    <div class="scard full hl"><div class="lab">${lang==="ru"?"Остаток за месяц (доход − расход)":"Осы айдағы қалдық (кіріс − шығын)"}</div><div class="val">${fmt(bal)}</div></div>
     <div class="scard"><div class="lab">${t("c_iowe")}</div><div class="val neg">${fmt(iowe)}</div></div>
     <div class="scard"><div class="lab">${t("c_owed")}</div><div class="val pos">${fmt(owed)}</div></div>
     <div class="scard full"><div class="lab">${lang==="ru"?"Накопления (цели)":"Жинақ (мақсаттар)"}</div><div class="val">${fmt(saved)}</div></div>`;
@@ -1087,9 +1091,10 @@ async function materializeRecurring(){
       const occ=r.next_date,stream=r.kind==="inc"?"inc":"exp";
       const dup=state[stream].some(x=>x.recur_id===r.id&&x.ymd===occ);
       if(!dup){
+        const detId="rec_"+r.id+"_"+occ;   /* детерминды id — екі құрылғы да бірдей жасайды → upsert қайталанбайды */
         const row=(r.kind==="inc")
-          ?{id:uid("e"),ymd:occ,amount:+r.amount||0,source:r.source||"other",note:(r.title||"")+" 🔁",recur_id:r.id}
-          :{id:uid("e"),ymd:occ,amount:+r.amount||0,cat:r.cat||"other",store:((r.title||(ru?"Регулярный":"Тұрақты"))+" 🔁"),recur_id:r.id};
+          ?{id:detId,ymd:occ,amount:+r.amount||0,source:r.source||"other",note:(r.title||"")+" 🔁",recur_id:r.id}
+          :{id:detId,ymd:occ,amount:+r.amount||0,cat:r.cat||"other",store:((r.title||(ru?"Регулярный":"Тұрақты"))+" 🔁"),recur_id:r.id};
         state[stream].push(row);rows.push([stream,row]);made++;
       }
       r.next_date=advanceMonth(occ,r.day);changed=true;
@@ -1634,6 +1639,7 @@ else{
     if(event==="PASSWORD_RECOVERY"){recovering=true;showAuth("recovery");return;}
     if(recovering)return;
     if(event==="SIGNED_OUT"){onLoggedOut();return;}
+    if(booted)return;   /* қосымшаға кірдік — токен жаңару / профиль өзгерту артық қайта жүктемесін */
     if(session&&session.user)onLoggedIn(session.user);
   });
   (async function(){
