@@ -44,7 +44,13 @@ alter table public.fin_recurring add column if not exists updated_at timestamptz
 alter table public.expenses  add column if not exists recur_id text;
 alter table public.fin_income add column if not exists recur_id text;
 
--- 3) RLS — отбасы мүшелері өз отбасының жазбаларын толық басқара алады ---------
+-- 3) Привилегии ролей — БЕЗ них Postgres вернёт "permission denied for table"
+--    (проверяется ДО RLS, поэтому одних политик недостаточно). Таблицы,
+--    созданные через SQL, не получают эти GRANT автоматически.
+grant select, insert, update, delete on table public.fin_recurring to authenticated;
+grant select, insert, update, delete on table public.fin_recurring to anon;
+
+-- 4) RLS — отбасы мүшелері өз отбасының жазбаларын толық басқара алады ---------
 --    Ескерту: басқа кестелеріңіздегі (expenses т.б.) саясат осыған ұқсас болуы
 --    керек. Егер бөлек is_member() функцияңыз болса — соны қолданыңыз.
 alter table public.fin_recurring enable row level security;
@@ -73,7 +79,7 @@ create policy "fin_recurring members write" on public.fin_recurring
     )
   );
 
--- 4) Realtime (қосымша live синхрон үшін; бұрыннан қосулы болса — қатесіз өтеді)
+-- 5) Realtime (қосымша live синхрон үшін; бұрыннан қосулы болса — қатесіз өтеді)
 do $$
 begin
   begin
