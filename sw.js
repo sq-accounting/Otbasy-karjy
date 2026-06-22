@@ -5,14 +5,17 @@
    Google Fonts, and any POST/PATCH/DELETE go straight to the network and are
    never cached or intercepted. */
 
-const CACHE = "qarjy-cache-v3";
-const SHELL = ["./", "./index.html", "./bg.jpg", "./manifest.webmanifest"];
+const CACHE = "qarjy-cache-v4";
+const SHELL = ["./", "./index.html", "./bg.jpg", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
-// Pre-cache the app shell on install
+// Pre-cache the app shell on install.
+// Add each asset individually so one missing file never aborts the whole precache.
 self.addEventListener("install", (e) => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(SHELL).catch(() => {}))
+    caches.open(CACHE).then((c) =>
+      Promise.allSettled(SHELL.map((u) => c.add(u)))
+    )
   );
 });
 
@@ -39,8 +42,11 @@ self.addEventListener("fetch", (e) => {
   e.respondWith((async () => {
     try {
       const fresh = await fetch(req);
-      const cache = await caches.open(CACHE);
-      cache.put(req, fresh.clone()).catch(() => {});
+      // Only cache successful, complete, same-origin responses (skip 404/206/redirects/opaque)
+      if (fresh && fresh.ok && fresh.status === 200 && fresh.type === "basic") {
+        const cache = await caches.open(CACHE);
+        cache.put(req, fresh.clone()).catch(() => {});
+      }
       return fresh;
     } catch (err) {
       const cached = await caches.match(req);
