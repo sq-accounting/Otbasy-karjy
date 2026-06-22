@@ -24,9 +24,9 @@
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
-  body{font-family:var(--body);color:var(--ink);background:linear-gradient(180deg,#EAF7E3 0%,#DEF1D4 55%,#D0EAC5 100%);background-attachment:fixed;min-height:100vh;line-height:1.5;font-size:16px}
+  body{font-family:var(--body);color:var(--ink);background:linear-gradient(180deg,#EAF7E3 0%,#DEF1D4 55%,#D0EAC5 100%);min-height:100vh;line-height:1.5;font-size:16px}
   #app{padding:0 0 calc(82px + env(safe-area-inset-bottom))}
-  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px calc(74px + env(safe-area-inset-bottom))}
   button,input,select,textarea{font-family:var(--body)}
   .link{background:none;border:none;color:var(--accent);font-weight:600;font-size:13px;cursor:pointer;padding:0;text-decoration:underline}
 
@@ -46,13 +46,24 @@
   .auth-msg.err{color:var(--danger)}.auth-msg.ok{color:var(--green)}
 
   .top{position:sticky;top:0;z-index:20;background:rgba(234,247,227,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  .top-in{max-width:760px;margin:0 auto;padding:13px 14px 0}
+  .top-in{max-width:760px;margin:0 auto;padding:12px 14px}
   .ttl{font-size:19px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
   .ttl small{font-size:11px;font-weight:500;color:var(--muted)}
-  .tabs{display:flex;gap:18px;margin-top:9px;overflow-x:auto;scrollbar-width:none}
-  .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:none;background:none;border:none;padding:9px 0;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;white-space:nowrap}
-  .tab.on{color:var(--accent);border-color:var(--accent)}
+  /* ===== төменгі навигация панелі ===== */
+  .botnav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;
+    background:rgba(247,250,238,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);box-shadow:0 -4px 18px rgba(60,80,40,.07);
+    padding-bottom:env(safe-area-inset-bottom);overflow-x:auto;scrollbar-width:none}
+  .botnav::-webkit-scrollbar{display:none}
+  .bnav{flex:1 0 auto;min-width:9.6%;background:none;border:none;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    padding:7px 5px 6px;color:var(--muted2);font-size:10px;font-weight:600;line-height:1.1;
+    -webkit-tap-highlight-color:transparent;transition:color .15s}
+  .bnav .ic{font-size:20px;line-height:1;filter:grayscale(.35) opacity(.85);transition:.15s}
+  .bnav span{white-space:nowrap}
+  .bnav.on{color:var(--accent)}
+  .bnav.on .ic{filter:none;transform:translateY(-1px)}
+  .bnav:active{transform:scale(.93)}
 
   .add{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;margin:14px 0}
   .amt-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -242,17 +253,14 @@
     --shadow:0 1px 2px rgba(60,70,40,.05),0 10px 28px rgba(70,100,55,.10);--r:20px;
     --display:ui-rounded,"SF Pro Rounded","Segoe UI Rounded",system-ui,-apple-system,"Inter",sans-serif;
   }
-  body{
+  /* Фон суреті жеке fixed қабатта — телефонда айналдыру жеңіл, лагсыз.
+     (background-attachment:fixed мобильде әр кадрда қайта сызып, ауырлататын.) */
+  body{background:linear-gradient(180deg,#F7F8F1 0%,#F4F6EE 55%,#F7F8F1 100%)}
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     background:
       linear-gradient(180deg,rgba(250,248,241,.90) 0%,rgba(248,250,240,.87) 55%,rgba(250,248,241,.92) 100%),
-      url('./bg.jpg') center center/cover no-repeat fixed;
-    background-attachment:fixed,fixed;
-  }
-  /* WebP қолдайтын браузерлерге жеңілдеу нұсқа (JPG — fallback) */
-  body{
-    background-image:
-      linear-gradient(180deg,rgba(250,248,241,.90) 0%,rgba(248,250,240,.87) 55%,rgba(250,248,241,.92) 100%),
-      image-set(url('./bg.webp') type('image/webp'), url('./bg.jpg') type('image/jpeg'));
+      image-set(url('./bg.webp') type('image/webp'), url('./bg.jpg') type('image/jpeg')) center center/cover no-repeat;
   }
   .view.on{display:block}
   .top{background:rgba(247,250,238,.9)}
@@ -361,7 +369,6 @@
   <div id="app" style="display:none">
     <div class="top"><div class="top-in">
       <div class="ttl">💰 <span data-i18n="app_name">Отбасы қаржысы</span> <small id="sync"></small></div>
-      <div class="tabs" id="tabbar"></div>
     </div></div>
 
     <div class="wrap">
@@ -497,6 +504,7 @@
         <div class="sync" id="sync2"></div>
       </div>
     </div>
+    <nav class="botnav" id="tabbar"></nav>
   </div>
 
   <div class="overlay" id="overlay"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
@@ -582,6 +590,7 @@ let SRC={};
 const ALL_SECTIONS=["dash","exp","inc","recur","debt","loan","goal","zakat","rep"];
 const SEC_KK={dash:"Басты",exp:"Шығын",inc:"Кіріс",recur:"Тұрақты",debt:"Қарыз",loan:"Несие",goal:"Мақсат",zakat:"Зекет",rep:"Есеп",set:"Баптау"};
 const SEC_RU={dash:"Главная",exp:"Расходы",inc:"Доходы",recur:"Регулярные",debt:"Долги",loan:"Кредит",goal:"Цели",zakat:"Закят",rep:"Отчёт",set:"Настройки"};
+const SEC_ICON={dash:"🏠",exp:"💸",inc:"💰",recur:"🔁",debt:"🤝",loan:"🏦",goal:"🎯",zakat:"🕌",rep:"📊",set:"⚙️"};
 const SEC_LABEL=SEC_KK;
 let lang="kk";try{lang=localStorage.getItem("qarjy_lang")||"kk";}catch(e){}
 function secLabel(s){return (lang==="ru"?SEC_RU:SEC_KK)[s]||s;}
@@ -957,15 +966,15 @@ function addNew(k){const o={id:uid(),created_by:meId()};if(k==="inc")o.ymd=today
 function allowed(){if(!me)return[];if(me.role==="admin"||me.all_access)return ALL_SECTIONS.slice();return (me.sections||[]).filter(s=>ALL_SECTIONS.includes(s));}
 function buildTabs(){
   const al=allowed();const tabs=ALL_SECTIONS.filter(s=>al.includes(s)).concat(["set"]);
-  $("tabbar").innerHTML=tabs.map((s,i)=>`<button class="tab" data-tab="${s}">${secLabel(s)}</button>`).join("");
+  $("tabbar").innerHTML=tabs.map((s)=>`<button class="bnav" data-tab="${s}"><span class="ic">${SEC_ICON[s]||"•"}</span><span>${secLabel(s)}</span></button>`).join("");
   let __savedTab="";try{__savedTab=localStorage.getItem(TAB_KEY)||"";}catch(_){}
   tab=tabs.includes(__savedTab)?__savedTab:(tabs.includes(tab)?tab:tabs[0]);
-  $("tabbar").querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{tab=b.dataset.tab;try{localStorage.setItem(TAB_KEY,tab);}catch(_){}render();}));
+  $("tabbar").querySelectorAll(".bnav").forEach(b=>b.addEventListener("click",()=>{tab=b.dataset.tab;try{localStorage.setItem(TAB_KEY,tab);}catch(_){}render();window.scrollTo(0,0);}));
 }
 function render(){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
   const v=$("view-"+tab);if(v)v.classList.add("on");
-  $("tabbar").querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
+  $("tabbar").querySelectorAll(".bnav").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
   ({dash:renderDash,exp:renderExp,inc:renderInc,recur:renderRecur,debt:renderDebt,loan:renderLoan,goal:renderGoal,zakat:renderZakat,rep:renderReport,set:renderSettings}[tab]||(()=>{}))();
 }
 
