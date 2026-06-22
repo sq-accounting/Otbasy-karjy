@@ -246,6 +246,12 @@
       url('./bg.jpg') center center/cover no-repeat fixed;
     background-attachment:fixed,fixed;
   }
+  /* WebP қолдайтын браузерлерге жеңілдеу нұсқа (JPG — fallback) */
+  body{
+    background-image:
+      linear-gradient(180deg,rgba(250,247,239,.70) 0%,rgba(248,250,240,.63) 55%,rgba(250,247,239,.72) 100%),
+      image-set(url('./bg.webp') type('image/webp'), url('./bg.jpg') type('image/jpeg'));
+  }
   .view.on{display:block}
   .top{background:rgba(247,250,238,.9)}
   .ttl,.auth-card h1,.lock-title,.panel h3,.member .m-top,.scard .val,.amt,.add-btn,.abtn,.btn,.tab,h1,h2,h3{font-family:var(--display)}
@@ -1439,8 +1445,26 @@ function renderReport(){
 let deferredPrompt=null;
 const REM_KEY="qarjy_reminders";
 /* ===== хабарландыру (қарапайым: қосымшаны ашқанда) ===== */
-let swReg=null;
-if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").then(r=>{swReg=r;}).catch(()=>{});}
+let swReg=null,__swReloading=false;
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").then(r=>{
+    swReg=r;
+    /* жаңа нұсқа табылғанда — қолданушыға жұмсақ ескерту (автоматты қайта жүктемейміз) */
+    r.addEventListener("updatefound",()=>{
+      const nw=r.installing;if(!nw)return;
+      nw.addEventListener("statechange",()=>{
+        if(nw.state==="installed"&&navigator.serviceWorker.controller){
+          const ru=lang==="ru";const to=$("toast");
+          if(to){to.textContent=ru?"Новая версия — нажмите, чтобы обновить":"Жаңа нұсқа — жаңарту үшін басыңыз";
+            to.classList.add("show");to.style.cursor="pointer";
+            to.onclick=()=>{__swReloading=true;try{nw.postMessage&&nw.postMessage("skip");}catch(e){}location.reload();};
+            clearTimeout(tT);tT=setTimeout(()=>{to.classList.remove("show");to.onclick=null;},8000);}
+        }
+      });
+    });
+  }).catch(()=>{});
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(__swReloading){__swReloading=false;location.reload();}});
+}
 async function showLocalNotif(title,opts){
   try{
     const reg=swReg||(("serviceWorker" in navigator)?await navigator.serviceWorker.ready:null);
@@ -1586,7 +1610,9 @@ $("hh-switch").addEventListener("change",(e)=>switchHousehold(e.target.value));
 /* v3 wiring — қауіпсіздік (PIN/құлып) */
 $("keypad").addEventListener("click",(e)=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.k)pressKey(b.dataset.k);else if(b.id==="key-back")backKey();else if(b.id==="key-bio")bioUnlock();});
 $("lock-alt").addEventListener("click",()=>{if(pinMode==="unlock")forgotPin();else hideLock();});
-document.addEventListener("keydown",(e)=>{if($("lock").style.display!=="flex")return;if(/^[0-9]$/.test(e.key))pressKey(e.key);else if(e.key==="Backspace")backKey();});
+document.addEventListener("keydown",(e)=>{if($("lock").style.display!=="flex")return;
+  if(e.key==="Tab"){trapTab(e,$("lock"));return;}                 /* фокус құлып экранынан шықпасын */
+  if(/^[0-9]$/.test(e.key))pressKey(e.key);else if(e.key==="Backspace")backKey();});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)hiddenAt=Date.now();else if(hasPin()&&me&&!locked&&(Date.now()-hiddenAt)>graceMs())lockApp();});
 (async()=>{try{bioAvail=await bioAvailable();}catch(e){bioAvail=false;}})();
 
@@ -1594,8 +1620,18 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)hiddenAt=Da
 if(typeof window!=="undefined"){
   window.addEventListener("online",()=>{updateSyncBadge();flushOutbox();});
   window.addEventListener("offline",updateSyncBadge);
-  document.addEventListener("visibilitychange",()=>{if(!document.hidden)flushOutbox();});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden){flushOutbox();dayRollover();}});
   setInterval(()=>{if(isOnline()&&outbox.length)flushOutbox();},45000);
+  setInterval(dayRollover,60000);   /* қосымша ашық тұрса да — күн/ай ауысуын қадағалау */
+}
+/* күн ауысса (түн ортасы / жаңа ай) — тұрақтыларды есептеп, экранды жаңарту */
+let __lastDay=todayYMD();
+async function dayRollover(){
+  if(!booted||!activeHH)return;
+  const d=todayYMD();if(d===__lastDay)return;__lastDay=d;
+  try{await materializeRecurring();}catch(e){}
+  try{checkReminders();}catch(e){}
+  render();
 }
 const __syncEl=$("sync");if(__syncEl){__syncEl.style.cursor="pointer";__syncEl.addEventListener("click",async()=>{await flushOutbox();if(outbox.length)toast((lang==="ru"?"Не отправлено: ":"Жіберілмеді: ")+(__lastSyncErr||outbox.length));else toast(lang==="ru"?"Всё синхронизировано ✓":"Бәрі синхрондалды ✓");});}
 
