@@ -441,6 +441,7 @@
       <div class="view" id="view-rep">
         <div class="cards" id="rep-cards"></div>
         <div class="panel"><h3 data-i18n="rep_month">Осы айдың қорытындысы</h3><div id="rep-month"></div></div>
+        <div class="panel"><h3 data-i18n="rep_year">Соңғы 12 ай</h3><div class="sumline" id="rep-year-sum"></div><div class="chartbox" style="height:230px"><canvas id="rep-chart"></canvas></div></div>
         <div class="panel"><h3 data-i18n="rep_top">Топ-5 санат</h3><div id="rep-top"></div></div>
       </div>
 
@@ -578,6 +579,8 @@ Object.assign(I18N.kk,{add_recur_exp:"＋ Шығын",add_recur_inc:"＋ Кір�
 Object.assign(I18N.ru,{add_recur_exp:"＋ Расход",add_recur_inc:"＋ Доход",recur_h:"Регулярные платежи",restore:"Восстановить из копии"});
 Object.assign(I18N.kk,{transfer_own:"Иелікті беру",delete_hh:"Отбасыны жою"});
 Object.assign(I18N.ru,{transfer_own:"Передать владение",delete_hh:"Удалить семью"});
+Object.assign(I18N.kk,{rep_year:"Соңғы 12 ай",avg_save:"Орташа айлық үнем"});
+Object.assign(I18N.ru,{rep_year:"Последние 12 месяцев",avg_save:"Средние сбережения/мес."});
 function t(k){return (I18N[lang]&&I18N[lang][k]!=null)?I18N[lang][k]:(I18N.kk[k]!=null?I18N.kk[k]:k);}
 function applyI18n(){
  document.querySelectorAll("[data-i18n]").forEach(el=>{const v=t(el.getAttribute("data-i18n"));if(v!=null)el.textContent=v;});
@@ -586,7 +589,7 @@ function applyI18n(){
 applyLangData();
 
 let state={exp:[],inc:[],debt:[],loan:[],goal:[],recur:[]};
-let addCat="food", tab="dash", chart=null, me=null, booted=false, recovering=false, membersCache=[];
+let addCat="food", tab="dash", chart=null, repChart=null, me=null, booted=false, recovering=false, membersCache=[];
 const TAB_KEY="qarjy_active_tab";
 function showLoading(){const l=$("loading");if(l){const t=$("loadtxt");if(t)t.textContent=lang==="ru"?"Загрузка…":"Жүктелуде…";l.style.display="flex";}}
 function hideLoading(){const l=$("loading");if(l)l.style.display="none";}
@@ -1442,6 +1445,25 @@ function renderReport(){
   const byCat=CATS.map(c=>({...c,sum:sumBy(state.exp.filter(e=>(e.ymd||"").startsWith(k)&&e.cat===c.key),e=>e.amount)})).filter(c=>c.sum>0).sort((a,b)=>b.sum-a.sum).slice(0,5);
   const mx=Math.max(1,...byCat.map(c=>c.sum));
   $("rep-top").innerHTML=byCat.length?byCat.map(c=>`<div class="cat-row"><span class="ce">${c.emoji}</span><div class="cat-info"><div class="cat-top"><span class="cat-name">${c.name}</span><span class="cat-amt">${fmt(c.sum)}</span></div><div class="bar"><i style="width:${Math.round(c.sum/mx*100)}%;background:${c.color}"></i></div></div></div>`).join(""):`<div class="empty">${t("no_exp_m")}</div>`;
+  renderYearChart();
+}
+function renderYearChart(){
+  const cv=$("rep-chart");if(!cv||!window.Chart)return;
+  const dd=new Date(),ms=[];
+  for(let i=11;i>=0;i--){const x=new Date(dd.getFullYear(),dd.getMonth()-i,1);ms.push({key:ymd(x).slice(0,7),label:(x.getMonth()+1)+"."+String(x.getFullYear()).slice(2)});}
+  const inc=ms.map(m=>sumBy(state.inc.filter(x=>(x.ymd||"").startsWith(m.key)),x=>x.amount));
+  const exp=ms.map(m=>sumBy(state.exp.filter(x=>(x.ymd||"").startsWith(m.key)),x=>x.amount));
+  const sav=inc.map((v,i)=>v-exp[i]);
+  const avg=Math.round(sav.reduce((s,v)=>s+v,0)/12);
+  const ys=$("rep-year-sum");if(ys)ys.innerHTML=`${t("avg_save")}: <b class="${avg>=0?'pos':'neg'}">${fmt(avg)}</b>`;
+  if(repChart)repChart.destroy();
+  repChart=new Chart(cv,{type:"bar",data:{labels:ms.map(m=>m.label),datasets:[
+      {type:"bar",label:t("income"),data:inc,backgroundColor:"#16A34A",borderRadius:4,maxBarThickness:13,order:2},
+      {type:"bar",label:t("expense"),data:exp,backgroundColor:"#E11D48",borderRadius:4,maxBarThickness:13,order:2},
+      {type:"line",label:t("savings"),data:sav,borderColor:"#2563EB",backgroundColor:"#2563EB",borderWidth:2,tension:.3,pointRadius:2,order:1}]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+      plugins:{legend:{position:"bottom",labels:{boxWidth:12,font:{size:11},color:"#5C7060"}},tooltip:{callbacks:{label:(c)=>c.dataset.label+": "+fmt(c.parsed.y)}}},
+      scales:{x:{grid:{display:false},ticks:{color:"#7C8A7E",font:{size:10}}},y:{beginAtZero:true,grid:{color:"#E4F0DD"},ticks:{color:"#7C8A7E",font:{size:10},callback:(v)=>fmtShort(v)}}}}});
 }
 
 /* ===== PWA / төлем еске салғышы ===== */
