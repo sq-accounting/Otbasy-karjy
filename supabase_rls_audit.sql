@@ -62,7 +62,7 @@ declare t text;
 begin
   foreach t in array array[
     'expenses','fin_income','fin_debts','fin_loans',
-    'fin_goals','fin_recurring','fin_budgets'
+    'fin_goals','fin_recurring','fin_budgets','fin_categories'
   ] loop
     execute format('alter table public.%I enable row level security', t);
     execute format('grant select, insert, update, delete on public.%I to authenticated', t);
