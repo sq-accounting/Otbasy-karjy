@@ -237,21 +237,21 @@
 
   /* ===== жайлы · табиғи · отбасылық рең ===== */
   :root{
-    --card:#FFFDF7;--ink:#293023;--muted:#7E8A77;--muted2:#AEC0A6;--line:#E6E9D8;
+    --card:#FFFFFF;--ink:#1C2417;--muted:#586552;--muted2:#9AAE92;--line:#E1E6D4;
     --accent:#3E9B57;--warm:#D89A4F;--warm-soft:#FBEFD9;
     --shadow:0 1px 2px rgba(60,70,40,.05),0 10px 28px rgba(70,100,55,.10);--r:20px;
     --display:ui-rounded,"SF Pro Rounded","Segoe UI Rounded",system-ui,-apple-system,"Inter",sans-serif;
   }
   body{
     background:
-      linear-gradient(180deg,rgba(250,247,239,.70) 0%,rgba(248,250,240,.63) 55%,rgba(250,247,239,.72) 100%),
+      linear-gradient(180deg,rgba(250,248,241,.90) 0%,rgba(248,250,240,.87) 55%,rgba(250,248,241,.92) 100%),
       url('./bg.jpg') center center/cover no-repeat fixed;
     background-attachment:fixed,fixed;
   }
   /* WebP қолдайтын браузерлерге жеңілдеу нұсқа (JPG — fallback) */
   body{
     background-image:
-      linear-gradient(180deg,rgba(250,247,239,.70) 0%,rgba(248,250,240,.63) 55%,rgba(250,247,239,.72) 100%),
+      linear-gradient(180deg,rgba(250,248,241,.90) 0%,rgba(248,250,240,.87) 55%,rgba(250,248,241,.92) 100%),
       image-set(url('./bg.webp') type('image/webp'), url('./bg.jpg') type('image/jpeg'));
   }
   .view.on{display:block}
@@ -284,7 +284,8 @@
   *{font-weight:600!important}
   b,strong,.it-name,.it-sub,.sub,.hint,.note,.prog,.prog span,.cat-pct,.rb,.set-row,.set-row span,.m-top,.mchip,.chip,.pill,.btn,.secbtn,.copybtn,.iconbtn,.bud-set,.link,.tab,.cat-name,.cat-amt,.bud-top .l,.bud-top .r,.scard .lab,.it-amt,button,input,select,textarea,label,a{font-weight:700!important}
   h1,h2,h3,h4,.ttl,.panel h3,.modal h3,.auth-card h1,.lock-title,.abtn,.add-btn,.amt,.val,.scard .val,.calc-out .v,.sumline,.sumline b,.sec,.nm,.hh-code,.gsum,.gdate{font-weight:800!important}
-  .sumline,.sec,.empty{text-shadow:0 1px 3px rgba(255,255,255,.9)}
+  .sumline,.sec,.empty{text-shadow:0 1px 1px rgba(255,255,255,.65)}
+  body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
   /* жүктелу күйі */
   .loadwrap{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(250,247,239,.82);z-index:70}
   .spinner{width:38px;height:38px;border:3.5px solid rgba(47,158,84,.25);border-top-color:var(--accent);border-radius:50%;animation:qspin .8s linear infinite}
