@@ -212,6 +212,8 @@
   .key.fn{background:none;box-shadow:none;font-size:21px;color:var(--muted)}
   .lock-link{margin-top:18px}
   @keyframes shk{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+  @keyframes qfall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(540deg);opacity:.9}}
+  @media (prefers-reduced-motion:reduce){[style*="qfall"]{display:none!important}}
   .shake{animation:shk .32s}
 
   .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(16px);background:#23262F;color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
@@ -1171,11 +1173,12 @@ function payLoan(id){const l=state.loan.find(x=>x.id===id);if(!l)return;l.remain
 function renderGoal(){
   const list=$("goal-list");
   if(state.goal.length===0){list.innerHTML=`<div class="empty">${t("no_goal")}</div>`;return;}
-  list.innerHTML=`<div class="glist">${state.goal.map(g=>{const pct=g.target>0?Math.min(100,Math.round((+g.saved||0)/g.target*100)):0;
-    return `<div class="item" style="flex-direction:column;align-items:stretch;gap:9px"><div style="display:flex;align-items:center;gap:11px"><div class="ic" style="background:#FFF4E5;color:var(--amber)">🎯</div><div class="it-main"><div class="it-name">${esc(g.name||t("f_gname"))}</div>${subHTML(g.note?esc(g.note):"",authBit(g))}</div><button class="it-btn" data-ed="goal:${g.id}" aria-label="${lang==="ru"?"Изменить":"Өңдеу"}">✎</button></div><div class="bar"><i style="width:${pct}%;background:var(--green)"></i></div><div class="prog"><span>${fmt(g.saved)} / ${fmt(g.target)}</span><span>${pct}%</span></div><button class="pill" style="align-self:flex-start" data-save="${g.id}">➕ ${t("deposit")}</button></div>`;}).join("")}</div>`;
+  list.innerHTML=`<div class="glist">${state.goal.map(g=>{const pct=g.target>0?Math.min(100,Math.round((+g.saved||0)/g.target*100)):0;const done=g.target>0&&(+g.saved||0)>=g.target;
+    return `<div class="item" style="flex-direction:column;align-items:stretch;gap:9px"><div style="display:flex;align-items:center;gap:11px"><div class="ic" style="background:${done?'#E7F6EC':'#FFF4E5'};color:${done?'var(--green)':'var(--amber)'}">${done?'🏆':'🎯'}</div><div class="it-main"><div class="it-name">${esc(g.name||t("f_gname"))}${done?` <span class="rb" style="background:#E7F6EC;color:var(--green)">${lang==="ru"?"цель достигнута":"мақсат орындалды"}</span>`:""}</div>${subHTML(g.note?esc(g.note):"",authBit(g))}</div><button class="it-btn" data-ed="goal:${g.id}" aria-label="${lang==="ru"?"Изменить":"Өңдеу"}">✎</button></div><div class="bar"><i style="width:${pct}%;background:var(--green)"></i></div><div class="prog"><span>${fmt(g.saved)} / ${fmt(g.target)}</span><span>${pct}%</span></div>${done?"":`<button class="pill" style="align-self:flex-start" data-save="${g.id}">➕ ${t("deposit")}</button>`}</div>`;}).join("")}</div>`;
 }
+function celebrate(){try{const wrap=document.createElement("div");wrap.setAttribute("aria-hidden","true");wrap.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:90;overflow:hidden";const em=["🎉","🎊","✨","🏆","💚","⭐"];for(let i=0;i<28;i++){const s=document.createElement("div");s.textContent=em[i%em.length];const left=Math.random()*100,dur=2.4+Math.random()*1.6,delay=Math.random()*0.5,size=16+Math.random()*16;s.style.cssText=`position:absolute;top:-8%;left:${left}%;font-size:${size}px;animation:qfall ${dur}s ${delay}s ease-in forwards`;wrap.appendChild(s);}document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),4200);}catch(e){}}
 function addToGoal(id){const g=state.goal.find(x=>x.id===id);if(!g)return;
-  openModal(t("deposit"),[{key:"add",label:(lang==="ru"?"Сколько добавить? (₸)":"Қанша қосасыз? (₸)"),type:"number"}],(v)=>{const a=num(v.add);if(a>0){g.saved=(+g.saved||0)+a;render();pUpsert("goal",g);toast(lang==="ru"?"Добавлено ✓":"Қосылды ✓");}closeModal();});}
+  openModal(t("deposit"),[{key:"add",label:(lang==="ru"?"Сколько добавить? (₸)":"Қанша қосасыз? (₸)"),type:"number"}],(v)=>{const a=num(v.add);if(a>0){const wasDone=g.target>0&&(+g.saved||0)>=g.target;g.saved=(+g.saved||0)+a;const nowDone=g.target>0&&(+g.saved||0)>=g.target;render();pUpsert("goal",g);if(nowDone&&!wasDone){celebrate();toast(lang==="ru"?"🎉 Цель достигнута! Поздравляем!":"🎉 Мақсатқа жеттіңіз! Құттықтаймыз!");}else toast(lang==="ru"?"Добавлено ✓":"Қосылды ✓");}closeModal();});}
 
 /* ===== settings / household / members ===== */
 function renderSettings(){
