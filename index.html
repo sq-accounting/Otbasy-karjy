@@ -509,6 +509,7 @@
 
   <div class="overlay" id="imp-overlay"><div class="modal" role="dialog" aria-modal="true">
     <h3>📋 <span data-i18n="imp_h">Чек толтыру</span></h3>
+    <button class="import-btn" id="imp-photo" style="margin-bottom:11px" data-i18n="imp_photo">📷 Чектің суретін түсіру</button>
     <p class="imp-help" data-i18n="imp_help">Чектің суретін Gemini-ге оқытып, шыққан мәтінді осында қойыңыз — тауарлар мен баға өзі бөлініп, кестеге толады.</p>
     <textarea id="imp-text" data-ph="imp_ph" placeholder="Мұнда чек мәтінін қой…"></textarea>
     <div class="imp-row">
@@ -598,6 +599,8 @@ Object.assign(I18N.kk,{rep_year:"Соңғы 12 ай",avg_save:"Орташа ай
 Object.assign(I18N.ru,{rep_year:"Последние 12 месяцев",avg_save:"Средние сбережения/мес."});
 Object.assign(I18N.kk,{cats_h:"Шығын санаттары",cats_hint:"Негізгі санаттарға қоса өзіңіздің санаттарыңызды қосыңыз — олар бүкіл отбасыға ортақ.",cat_add:"＋ Санат қосу"});
 Object.assign(I18N.ru,{cats_h:"Категории расходов",cats_hint:"Кроме базовых, добавьте свои категории — они общие для всей семьи.",cat_add:"＋ Добавить категорию"});
+Object.assign(I18N.kk,{imp_photo:"📷 Чектің суретін түсіру"});
+Object.assign(I18N.ru,{imp_photo:"📷 Сфотографировать чек"});
 function t(k){return (I18N[lang]&&I18N[lang][k]!=null)?I18N[lang][k]:(I18N.kk[k]!=null?I18N.kk[k]:k);}
 function applyI18n(){
  document.querySelectorAll("[data-i18n]").forEach(el=>{const v=t(el.getAttribute("data-i18n"));if(v!=null)el.textContent=v;});
@@ -1430,6 +1433,34 @@ function parseReceipt(text){
   return out;
 }
 function openImport(){$("imp-text").value="";$("imp-store").value="";$("imp-date").value=todayYMD();$("imp-preview").innerHTML="";$("imp-add").style.display="none";impItems=[];$("imp-overlay").classList.add("show");setTimeout(()=>{var t=$("imp-text");if(t)t.focus();},30);}
+/* ===== чек суретін тану (Gemini, Supabase Edge Function арқылы) ===== */
+async function fileToScaledB64(file,maxW=1280,quality=0.82){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url;});
+    const scale=Math.min(1,maxW/(img.width||maxW)),w=Math.max(1,Math.round((img.width||maxW)*scale)),h=Math.max(1,Math.round((img.height||maxW)*scale));
+    const cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,0,0,w,h);
+    return (cv.toDataURL("image/jpeg",quality).split(",")[1])||"";
+  }finally{URL.revokeObjectURL(url);}
+}
+async function ocrPhoto(file){
+  const ru=lang==="ru";if(!file)return;
+  if(!db){toast("Supabase…");return;}
+  const btn=$("imp-photo"),old=btn?btn.innerHTML:"";
+  if(btn){btn.disabled=true;btn.innerHTML=ru?"⏳ Распознаём…":"⏳ Танылуда…";}
+  try{
+    const b64=await fileToScaledB64(file);
+    if(!b64)throw new Error(ru?"не удалось прочитать фото":"сурет оқылмады");
+    const {data,error}=await db.functions.invoke("ocr-receipt",{body:{image:b64,mime:"image/jpeg"}});
+    if(error){let m=error.message||error;try{if(error.context&&error.context.json){const j=await error.context.json();m=j.error||m;}}catch(_){}throw new Error(m);}
+    if(data&&data.error)throw new Error(data.error);
+    const items=(data&&data.items)||[];
+    impItems=items.map(x=>({name:String(x.name||"").trim()||(ru?"Товар":"Тауар"),amount:num(x.amount),cat:guessCat(x.name),on:true})).filter(x=>x.amount>0);
+    renderPreview();
+    toast(impItems.length?((ru?"Распознано: ":"Танылды: ")+impItems.length):(ru?"Товары не распознаны — впишите вручную":"Тауар танылмады — қолмен жазыңыз"));
+  }catch(e){toast((ru?"Распознавание не удалось: ":"Тану қатесі: ")+((e&&e.message)||e));}
+  finally{if(btn){btn.disabled=false;btn.innerHTML=old;}}
+}
 function renderPreview(){
   if(impItems.length===0){$("imp-preview").innerHTML=`<div class="pv-sum">${lang==="ru"?"Товары не найдены — проверьте текст.":"Зат табылмады — мәтінді тексеріңіз."}</div>`;$("imp-add").style.display="none";return;}
   $("imp-preview").innerHTML=impItems.map((it,i)=>`<div class="pv-row"><input type="checkbox" class="pv-chk" data-i="${i}" ${it.on?"checked":""}><input class="pv-name" data-n="${i}" value="${esc(it.name)}"><input class="pv-amt" data-a="${i}" inputmode="decimal" value="${it.amount}"><select class="pv-cat" data-c="${i}">${CATS.map(c=>`<option value="${c.key}"${c.key===it.cat?" selected":""}>${c.emoji}</option>`).join("")}</select></div>`).join("")+`<div class="pv-sum" id="pv-sum"></div>`;
@@ -1670,6 +1701,7 @@ $("app").addEventListener("click",(e)=>{
 });
 
 $("btn-import").addEventListener("click",openImport);
+$("imp-photo").addEventListener("click",()=>{const inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.setAttribute("capture","environment");inp.onchange=()=>{const f=inp.files&&inp.files[0];if(f)ocrPhoto(f);};inp.click();});
 $("imp-cancel").addEventListener("click",()=>$("imp-overlay").classList.remove("show"));
 $("imp-overlay").addEventListener("click",(e)=>{if(e.target===$("imp-overlay"))$("imp-overlay").classList.remove("show");});
 $("imp-parse").addEventListener("click",()=>{const p=parseReceipt($("imp-text").value);impItems=p.map(x=>({name:x.name,amount:x.amount,cat:guessCat(x.name),on:true}));renderPreview();toast(lang==="ru"?(p.length?p.length+" тов. найдено":"Товары не найдены"):(p.length?p.length+" зат табылды":"Зат табылмады"));});
