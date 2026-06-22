@@ -512,7 +512,7 @@
       <div class="lock-logo">🔒</div>
       <div class="lock-title" id="lock-title" data-i18n="lock_enter">PIN кодты енгізіңіз</div>
       <div class="lock-dots" id="lock-dots"></div>
-      <div class="lock-err" id="lock-err"></div>
+      <div class="lock-err" id="lock-err" role="alert" aria-live="assertive"></div>
       <div class="keypad" id="keypad">
         <button class="key" data-k="1">1</button>
         <button class="key" data-k="2">2</button>
@@ -559,7 +559,7 @@ const SEC_RU={dash:"Главная",exp:"Расходы",inc:"Доходы",recu
 const SEC_LABEL=SEC_KK;
 let lang="kk";try{lang=localStorage.getItem("qarjy_lang")||"kk";}catch(e){}
 function secLabel(s){return (lang==="ru"?SEC_RU:SEC_KK)[s]||s;}
-function applyLangData(){CATS.forEach(c=>c.name=lang==="ru"?c.ru:c.kk);SRC={};Object.keys(SRC_DEF).forEach(k=>{SRC[k]=[SRC_DEF[k][0],lang==="ru"?SRC_DEF[k][2]:SRC_DEF[k][1]];});}
+function applyLangData(){CATS.forEach(c=>c.name=lang==="ru"?c.ru:c.kk);SRC={};Object.keys(SRC_DEF).forEach(k=>{SRC[k]=[SRC_DEF[k][0],lang==="ru"?SRC_DEF[k][2]:SRC_DEF[k][1]];});try{document.documentElement.lang=lang;}catch(e){}}
 const I18N={
  kk:{app_name:"Отбасы қаржысы",email:"Email",password:"Құпиясөз",login_btn:"Кіру",no_acc:"Аккаунт жоқ па?",signup:"Тіркелу",have_acc:"Аккаунт бар ма?",signin:"Кіру",name:"Аты-жөні",signup_btn:"Тіркелу",forgot:"Құпиясөзді ұмыттыңыз ба?",forgot_p:"Email-іңізді жазыңыз — қалпына келтіру сілтемесін жібереміз.",send:"Сілтеме жіберу",back:"Артқа",recovery_p:"Жаңа құпиясөз енгізіңіз.",newpass:"Жаңа құпиясөз",save:"Сақтау",onb_h:"Отбасыңызды бастаңыз",onb_p:"Бірге қаржы жүргізу үшін отбасы құрыңыз немесе қосылыңыз.",create_h:"Отбасы құру",create_p:"Жаңа отбасы құрып, басқаларды шақырыңыз.",hh_name:"Отбасы атауы",create_btn:"Құру",or:"немесе",join_h:"Қосылу",join_p:"Шақыру кодын енгізіп қосылыңыз.",inv_code:"Шақыру коды",join_btn:"Қосылу",switch_acc:"Басқа аккаунт",add_exp:"＋ Шығын қосу",add_inc:"＋ Кіріс қосу",add_debt:"＋ Қарыз қосу",add_loan:"＋ Несие қосу",add_goal:"＋ Мақсат қосу",import:"📄 Чек толтыру",search_ph:"Іздеу...",budget:"Ай лимиті",set_limit:"Лимит қою",exp_by_cat:"Санат бойынша",iowe:"🔴 Мен қарызбын",owed:"🟢 Маған қарыз",upcoming:"Алдағы төлемдер",chart6:"Соңғы 6 ай",hh:"Отбасы",leave:"Отбасынан шығу",profile:"Менің профилім",save_name:"Атын сақтау",change_pass:"Құпиясөз ауыстыру",logout:"Шығу",security:"Қауіпсіздік",app_sec:"Қосымша",reminder:"Төлем еске салғышы",data:"Деректер",export_csv:"CSV экспорт",backup:"Сақтық көшірме (JSON)",members:"Мүшелер",members_p:"Рөл мен бөлім рұқсатын басқарыңыз",language:"Тіл",zakat_h:"Зекет калькуляторы",today:"Бүгін",yesterday:"Кеше",c_inc:"Осы ай кіріс",c_exp:"Осы ай шығын",c_bal:"Қалдық",c_iowe:"Мен қарызбын",c_owed:"Маған қарыз",c_saved:"Жинақ",overdue:"мерзімі өтті",due_today:"бүгін",no_upcoming:"Алдағы төлем жоқ",net_worth:"Таза құндылық (актив − міндеттеме)",assets:"Активтер",liab:"Міндеттемелер",income:"Кіріс",expense:"Шығын",savings:"Үнем (кіріс − шығын)",save_rate:"Үнемдеу деңгейі",no_exp_m:"Бұл айда шығын жоқ",rep_month:"Осы айдың қорытындысы",rep_top:"Топ-5 санат",this_month:"Осы ай",no_inc:"Кіріс жазбасы жоқ",no_debt:"Қарыз жазбасы жоқ",settle:"жабу",item_w:"зат",due_w:"мерзім",total_left:"Жалпы қалдық",monthly_w:"айлық",next_w:"келесі",paid_w:"Төленді",left_w:"Қалды",add_pay:"Төлем енгізу",no_loan:"Несие жоқ",deposit:"Салым қосу",no_goal:"Мақсат жоқ",no_exp:"Шығын жоқ. «Шығын қосу» немесе «Чек толтыру».",nothing_found:"Сәйкес жазба табылмады",f_amount:"Сома",f_source:"Көзі",f_date:"Күні",f_note:"Ескертпе",f_kind:"Түрі",f_person:"Кім",f_how:"Қалай",f_item:"Зат атауы",f_due:"Мерзімі",f_lname:"Несие атауы",f_principal:"Бастапқы сома",f_remaining:"Қалдық",f_monthly:"Айлық төлем",f_nextdue:"Келесі төлем",f_gname:"Мақсат атауы",f_target:"Мақсат сомасы",f_saved:"Жиналған",f_cat:"Санат",f_store:"Дүкен/орын",opt_salary:"💼 Жалақы",opt_business:"🏪 Бизнес",opt_gift:"🎁 Сыйлық",opt_other:"💰 Басқа",opt_iowe:"Мен қарызбын",opt_owed:"Маған қарыз",opt_cash:"Ақшалай",opt_goods:"Зат/тауар",opt_loan:"Несие",opt_mortgage:"Ипотека"},
  ru:{app_name:"Семейные финансы",email:"Email",password:"Пароль",login_btn:"Войти",no_acc:"Нет аккаунта?",signup:"Регистрация",have_acc:"Есть аккаунт?",signin:"Войти",name:"Имя",signup_btn:"Зарегистрироваться",forgot:"Забыли пароль?",forgot_p:"Введите email — пришлём ссылку для восстановления.",send:"Отправить ссылку",back:"Назад",recovery_p:"Введите новый пароль.",newpass:"Новый пароль",save:"Сохранить",onb_h:"Начните с семьи",onb_p:"Создайте семью или присоединитесь, чтобы вести бюджет вместе.",create_h:"Создать семью",create_p:"Создайте новую семью и пригласите близких.",hh_name:"Название семьи",create_btn:"Создать",or:"или",join_h:"Присоединиться",join_p:"Введите код приглашения.",inv_code:"Код приглашения",join_btn:"Присоединиться",switch_acc:"Другой аккаунт",add_exp:"＋ Добавить расход",add_inc:"＋ Добавить доход",add_debt:"＋ Добавить долг",add_loan:"＋ Добавить кредит",add_goal:"＋ Добавить цель",import:"📄 Заполнить из чека",search_ph:"Поиск...",budget:"Лимит на месяц",set_limit:"Задать лимит",exp_by_cat:"По категориям",iowe:"🔴 Я должен",owed:"🟢 Мне должны",upcoming:"Ближайшие платежи",chart6:"Последние 6 месяцев",hh:"Семья",leave:"Покинуть семью",profile:"Мой профиль",save_name:"Сохранить имя",change_pass:"Сменить пароль",logout:"Выйти",security:"Безопасность",app_sec:"Дополнительно",reminder:"Напоминание о платежах",data:"Данные",export_csv:"Экспорт CSV",backup:"Резервная копия (JSON)",members:"Участники",members_p:"Управляйте ролями и доступом к разделам",language:"Язык",zakat_h:"Калькулятор закята",today:"Сегодня",yesterday:"Вчера",c_inc:"Доход за месяц",c_exp:"Расход за месяц",c_bal:"Остаток",c_iowe:"Я должен",c_owed:"Мне должны",c_saved:"Накопления",overdue:"просрочено",due_today:"сегодня",no_upcoming:"Нет ближайших платежей",net_worth:"Чистая стоимость (активы − обязательства)",assets:"Активы",liab:"Обязательства",income:"Доход",expense:"Расход",savings:"Сбережения (доход − расход)",save_rate:"Норма сбережений",no_exp_m:"В этом месяце расходов нет",rep_month:"Итоги месяца",rep_top:"Топ-5 категорий",this_month:"Этот месяц",no_inc:"Нет записей о доходах",no_debt:"Нет записей о долгах",settle:"закрыть",item_w:"вещь",due_w:"срок",total_left:"Общий остаток",monthly_w:"в месяц",next_w:"следующий",paid_w:"Оплачено",left_w:"Осталось",add_pay:"Внести платёж",no_loan:"Нет кредитов",deposit:"Добавить вклад",no_goal:"Нет целей",no_exp:"Расходов нет. «Добавить расход» или «Заполнить из чека».",nothing_found:"Ничего не найдено",f_amount:"Сумма",f_source:"Источник",f_date:"Дата",f_note:"Заметка",f_kind:"Тип",f_person:"Кто",f_how:"Как",f_item:"Название вещи",f_due:"Срок",f_lname:"Название кредита",f_principal:"Начальная сумма",f_remaining:"Остаток",f_monthly:"Ежемесячный платёж",f_nextdue:"Следующий платёж",f_gname:"Название цели",f_target:"Сумма цели",f_saved:"Накоплено",f_cat:"Категория",f_store:"Магазин/место",opt_salary:"💼 Зарплата",opt_business:"🏪 Бизнес",opt_gift:"🎁 Подарок",opt_other:"💰 Другое",opt_iowe:"Я должен",opt_owed:"Мне должны",opt_cash:"Деньгами",opt_goods:"Вещь/товар",opt_loan:"Кредит",opt_mortgage:"Ипотека"}
@@ -600,19 +600,22 @@ let tT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("sho
 /* серверге жазу сәтсіз болғанда — нақты себебін көрсету (тыныш қатып қалмасын) */
 let __syncErrAt=0;
 function reportSyncError(msg){
+  const m=String(msg||"").trim();
+  if(/failed to fetch|networkerror|load failed|network request failed|timed?\s*out|fetch event/i.test(m))return; /* өткінші желі — кезек өзі қайталайды */
   const now=Date.now();if(now-__syncErrAt<6000)return;__syncErrAt=now;   /* цикл/интервал спам жасамасын */
-  const ru=lang==="ru",m=String(msg||"").trim();
+  const ru=lang==="ru";
   toast((ru?"Не сохранено: ":"Сақталмады: ")+(m||(ru?"ошибка сервера":"сервер қатесі")));
 }
 const sumBy=(arr,f)=>arr.reduce((s,x)=>s+(+f(x)||0),0);
-function num(v){return parseFloat(String(v==null?"":v).replace(/\s/g,"").replace(",","."))||0;}
+function num(v){let s=String(v==null?"":v).replace(/\s/g,"");if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,"");return parseFloat(s.replace(",","."))||0;}
 function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function todayYMD(){return ymd(new Date());}
 function mkey(){return todayYMD().slice(0,7);}
 function fmt(n){return Math.round(+n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₸';}
 function fmtShort(n){n=Math.round(+n||0);return Math.abs(n)>=1000?(Math.round(n/100)/10).toString().replace(/\.0$/,'')+'к':String(n);}
 function dlabel(y){if(!y)return"";const tn=todayYMD();if(y===tn)return t("today");const d=new Date();d.setDate(d.getDate()-1);if(y===ymd(d))return t("yesterday");const[Y,M,D]=y.split("-");return `${D}.${M}.${Y}`;}
-function daysTo(y){if(!y)return 1e9;const a=new Date(y),b=new Date(todayYMD());return Math.round((a-b)/86400000);}
+function parseYMD(s){const p=String(s||"").split("-");return new Date(+p[0],(+p[1]||1)-1,+p[2]||1);}  /* жергілікті уақытпен талдау (UTC жылжуы болмасын) */
+function daysTo(y){if(!y)return 1e9;const a=parseYMD(y),b=parseYMD(todayYMD());return Math.round((a-b)/86400000);}
 
 /* ===== жазба авторы (кім қосты) ===== */
 function meId(){return (authUser&&authUser.id)||null;}
@@ -732,7 +735,7 @@ async function onLoggedIn(user){
   enterApp(pick);
 }
 async function enterApp(hh){
-  if(booted)return;booted=true;historyFull=false;expDays=31;
+  if(booted)return;booted=true;historyFull=false;expDays=31;expMonth="";expSearch="";{const es=$("exp-search");if(es)es.value="";}
   activeHH=hh;try{localStorage.setItem(HH_KEY,hh);}catch(e){}
   me=memberships.find(m=>m.household_id===hh)||memberships[0];
   activeHHObj=hhMap[hh]||null;
@@ -844,7 +847,7 @@ async function loadOlder(){
 }
 function subAll(){
   for(const k in TBL){
-    db.channel("rt-"+k).on("postgres_changes",{event:"*",schema:"public",table:TBL[k]},(pl)=>{
+    db.channel("rt-"+k).on("postgres_changes",{event:"*",schema:"public",table:TBL[k],filter:"household_id=eq."+activeHH},(pl)=>{
       if(pl.eventType==="DELETE"){const id=pl.old&&pl.old.id;if(id)state[k]=state[k].filter(x=>x.id!==id);}
       else if(pl.new){const r=pl.new;if(r.household_id&&r.household_id!==activeHH)return;const i=state[k].findIndex(x=>x.id===r.id);if(i>=0)state[k][i]=r;else state[k].push(r);}
       render();
@@ -872,9 +875,9 @@ function openModal(title,fields,save,del){
   $("m-title").textContent=title;
   $("m-fields").innerHTML=fields.map(f=>{
     const sv=f.val!==undefined?f.val:(f.def!==undefined?f.def:"");
-    if(f.type==="select")return `<div class="field"><label>${f.label}</label><select id="f-${f.key}">${f.options.map(o=>`<option value="${esc(o[0])}"${String(o[0])===String(sv||"")?" selected":""}>${esc(o[1])}</option>`).join("")}</select></div>`;
+    if(f.type==="select")return `<div class="field"><label for="f-${f.key}">${f.label}</label><select id="f-${f.key}">${f.options.map(o=>`<option value="${esc(o[0])}"${String(o[0])===String(sv||"")?" selected":""}>${esc(o[1])}</option>`).join("")}</select></div>`;
     const t=f.type==="number"?'inputmode="decimal"':(f.type==="date"?'type="date"':(f.type==="password"?'type="password"':""));
-    return `<div class="field"><label>${f.label}</label><input ${t} id="f-${f.key}" value="${esc(sv||"")}" placeholder="${esc(f.ph||"")}"></div>`;
+    return `<div class="field"><label for="f-${f.key}">${f.label}</label><input ${t} id="f-${f.key}" value="${esc(sv||"")}" placeholder="${esc(f.ph||"")}"></div>`;
   }).join("");
   onSave=()=>{const v={};fields.forEach(f=>v[f.key]=$("f-"+f.key).value);save(v);};
   onDel=del||null;$("m-del").style.display=del?"":"none";
@@ -1041,19 +1044,19 @@ function renderInc(){
   const list=$("inc-list");
   if(state.inc.length===0){list.innerHTML=`<div class="empty">${t("no_inc")}</div>`;return;}
   const sorted=[...state.inc].sort((a,b)=>(a.ymd<b.ymd?1:-1));
-  list.innerHTML=`<div class="glist">${sorted.map(x=>{const s=SRC[x.source]||SRC.other;return `<div class="item" data-ed="inc:${x.id}"><div class="ic" style="background:#E7F6EC;color:var(--green)">${s[0]}</div><div class="it-main"><div class="it-name">${s[1]}</div>${subHTML(dlabel(x.ymd),x.note?esc(x.note):"",authBit(x))}</div><div class="it-amt pos">+${fmt(x.amount)}</div><button class="it-btn" data-ed="inc:${x.id}">✎</button></div>`;}).join("")}</div>`;
+  list.innerHTML=`<div class="glist">${sorted.map(x=>{const s=SRC[x.source]||SRC.other;return `<div class="item" data-ed="inc:${x.id}"><div class="ic" style="background:#E7F6EC;color:var(--green)">${s[0]}</div><div class="it-main"><div class="it-name">${s[1]}</div>${subHTML(dlabel(x.ymd),x.note?esc(x.note):"",authBit(x))}</div><div class="it-amt pos">+${fmt(x.amount)}</div><button class="it-btn" data-ed="inc:${x.id}" aria-label="${lang==="ru"?"Изменить":"Өңдеу"}">✎</button></div>`;}).join("")}</div>`;
 }
 
 /* ===== қайталанатын төлемдер ===== */
 function clampDay(y,m,day){const last=new Date(y,m+1,0).getDate();return Math.min(day,last);}
 function nextRecurDate(day){
-  const t0=new Date(todayYMD()),Y=t0.getFullYear(),M=t0.getMonth();
+  const t0=parseYMD(todayYMD()),Y=t0.getFullYear(),M=t0.getMonth();
   let c=new Date(Y,M,clampDay(Y,M,day));
   if(c<t0){const nm=new Date(Y,M+1,1),y2=nm.getFullYear(),m2=nm.getMonth();c=new Date(y2,m2,clampDay(y2,m2,day));}
   return ymd(c);
 }
 function advanceMonth(fromYmd,day){
-  const d=new Date(fromYmd),nm=new Date(d.getFullYear(),d.getMonth()+1,1),y2=nm.getFullYear(),m2=nm.getMonth();
+  const d=parseYMD(fromYmd),nm=new Date(d.getFullYear(),d.getMonth()+1,1),y2=nm.getFullYear(),m2=nm.getMonth();
   return ymd(new Date(y2,m2,clampDay(y2,m2,day)));
 }
 function recurFields(kind){
@@ -1129,7 +1132,7 @@ function renderRecur(){
       +`<div class="ic" style="background:${inc?'#E7F6EC':col+'1a'};color:${col}">${ic}</div>`
       +`<div class="it-main"><div class="it-name">${name}</div><div class="it-sub">${sched} · ${ru?"далее":"келесі"}: ${dlabel(r.next_date)}${paused?(ru?" · пауза":" · кідіртілген"):""}</div></div>`
       +`<div class="it-amt ${inc?'pos':'neg'}">${inc?'+':'−'}${fmt(r.amount)}</div>`
-      +`<button class="it-btn" data-recedit="${r.id}">✎</button></div>`
+      +`<button class="it-btn" data-recedit="${r.id}" aria-label="${lang==="ru"?"Изменить":"Өңдеу"}">✎</button></div>`
       +`<button class="pill${paused?'':' ok'}" style="align-self:flex-start" data-rectoggle="${r.id}">${paused?(ru?"▶ Возобновить":"▶ Жалғастыру"):(ru?"⏸ Пауза":"⏸ Кідірту")}</button>`
       +`</div>`;
   }).join("")}</div>`;
@@ -1137,7 +1140,7 @@ function renderRecur(){
 
 /* ===== debts ===== */
 function debtRow(x){const cash=x.dtype!=="goods";const lbl=x.person||"—";const sub=(cash?"":"📦 "+(x.item||t("item_w")))+(x.due?(cash?"":" · ")+t("due_w")+": "+dlabel(x.due):"")+(x.note?" · "+esc(x.note):"");
-  return `<div class="item${x.settled?" done":""}"><div class="ic" style="background:${x.kind==="iowe"?'#FCE3E3':'#E7F6EC'};color:${x.kind==="iowe"?'var(--danger)':'var(--green)'}">${cash?"💵":"📦"}</div><div class="it-main"><div class="it-name">${esc(lbl)}</div><div class="it-sub">${[sub||(cash?(lang==="ru"?"деньгами":"ақшалай"):""),authBit(x)].filter(Boolean).join(" · ")}</div></div><div class="it-amt">${fmt(x.amount)}</div><button class="pill ${x.settled?"ok":""}" data-settle="${x.id}">${x.settled?"✓":t("settle")}</button><button class="it-btn" data-ed="debt:${x.id}">✎</button></div>`;}
+  return `<div class="item${x.settled?" done":""}"><div class="ic" style="background:${x.kind==="iowe"?'#FCE3E3':'#E7F6EC'};color:${x.kind==="iowe"?'var(--danger)':'var(--green)'}">${cash?"💵":"📦"}</div><div class="it-main"><div class="it-name">${esc(lbl)}</div><div class="it-sub">${[sub||(cash?(lang==="ru"?"деньгами":"ақшалай"):""),authBit(x)].filter(Boolean).join(" · ")}</div></div><div class="it-amt">${fmt(x.amount)}</div><button class="pill ${x.settled?"ok":""}" data-settle="${x.id}">${x.settled?"✓":t("settle")}</button><button class="it-btn" data-ed="debt:${x.id}" aria-label="${lang==="ru"?"Изменить":"Өңдеу"}">✎</button></div>`;}
 function renderDebt(){
   const iowe=state.debt.filter(x=>x.kind==="iowe"),owed=state.debt.filter(x=>x.kind==="owed");
   const sI=sumBy(iowe.filter(x=>!x.settled),x=>x.amount),sO=sumBy(owed.filter(x=>!x.settled),x=>x.amount);
@@ -1154,16 +1157,16 @@ function renderLoan(){
   const list=$("loan-list");
   if(state.loan.length===0){list.innerHTML=`<div class="empty">${t("no_loan")}</div>`;return;}
   list.innerHTML=`<div class="glist">${state.loan.map(l=>{const paid=Math.max(0,(+l.principal||0)-(+l.remaining||0));const pct=l.principal>0?Math.min(100,Math.round(paid/l.principal*100)):0;const km=l.kind==="mortgage"?["🏠",(lang==="ru"?"Ипотека":"Ипотека")]:["🏦",(lang==="ru"?"Кредит":"Несие")];
-    return `<div class="item" style="flex-direction:column;align-items:stretch;gap:9px"><div style="display:flex;align-items:center;gap:11px"><div class="ic" style="background:#E7F6EC;color:var(--accent)">${km[0]}</div><div class="it-main"><div class="it-name">${esc(l.name||km[1])}</div><div class="it-sub">${km[1]} · ${t("monthly_w")} ${fmt(l.monthly)}${l.nextdue?" · "+t("next_w")+": "+dlabel(l.nextdue):""}${authBit(l)?(" · "+authBit(l)):""}</div></div><button class="it-btn" data-ed="loan:${l.id}">✎</button></div><div class="bar"><i style="width:${pct}%;background:var(--accent)"></i></div><div class="prog"><span>${t("paid_w")}: ${fmt(paid)} (${pct}%)</span><span>${t("left_w")}: ${fmt(l.remaining)}</span></div><button class="pill" style="align-self:flex-start" data-pay="${l.id}">💸 ${t("add_pay")}</button></div>`;}).join("")}</div>`;
+    return `<div class="item" style="flex-direction:column;align-items:stretch;gap:9px"><div style="display:flex;align-items:center;gap:11px"><div class="ic" style="background:#E7F6EC;color:var(--accent)">${km[0]}</div><div class="it-main"><div class="it-name">${esc(l.name||km[1])}</div><div class="it-sub">${km[1]} · ${t("monthly_w")} ${fmt(l.monthly)}${l.nextdue?" · "+t("next_w")+": "+dlabel(l.nextdue):""}${authBit(l)?(" · "+authBit(l)):""}</div></div><button class="it-btn" data-ed="loan:${l.id}" aria-label="${lang==="ru"?"Изменить":"Өңдеу"}">✎</button></div><div class="bar"><i style="width:${pct}%;background:var(--accent)"></i></div><div class="prog"><span>${t("paid_w")}: ${fmt(paid)} (${pct}%)</span><span>${t("left_w")}: ${fmt(l.remaining)}</span></div><button class="pill" style="align-self:flex-start" data-pay="${l.id}">💸 ${t("add_pay")}</button></div>`;}).join("")}</div>`;
 }
-function payLoan(id){const l=state.loan.find(x=>x.id===id);if(!l)return;l.remaining=Math.max(0,(+l.remaining||0)-(+l.monthly||0));if(l.nextdue){const d=new Date(l.nextdue);d.setMonth(d.getMonth()+1);l.nextdue=ymd(d);}render();pUpsert("loan",l);toast(lang==="ru"?"Платёж учтён ✓":"Төлем тіркелді ✓");}
+function payLoan(id){const l=state.loan.find(x=>x.id===id);if(!l)return;l.remaining=Math.max(0,(+l.remaining||0)-(+l.monthly||0));if(l.nextdue){const d=parseYMD(l.nextdue);d.setMonth(d.getMonth()+1);l.nextdue=ymd(d);}render();pUpsert("loan",l);toast(lang==="ru"?"Платёж учтён ✓":"Төлем тіркелді ✓");}
 
 /* ===== goals ===== */
 function renderGoal(){
   const list=$("goal-list");
   if(state.goal.length===0){list.innerHTML=`<div class="empty">${t("no_goal")}</div>`;return;}
   list.innerHTML=`<div class="glist">${state.goal.map(g=>{const pct=g.target>0?Math.min(100,Math.round((+g.saved||0)/g.target*100)):0;
-    return `<div class="item" style="flex-direction:column;align-items:stretch;gap:9px"><div style="display:flex;align-items:center;gap:11px"><div class="ic" style="background:#FFF4E5;color:var(--amber)">🎯</div><div class="it-main"><div class="it-name">${esc(g.name||t("f_gname"))}</div>${subHTML(g.note?esc(g.note):"",authBit(g))}</div><button class="it-btn" data-ed="goal:${g.id}">✎</button></div><div class="bar"><i style="width:${pct}%;background:var(--green)"></i></div><div class="prog"><span>${fmt(g.saved)} / ${fmt(g.target)}</span><span>${pct}%</span></div><button class="pill" style="align-self:flex-start" data-save="${g.id}">➕ ${t("deposit")}</button></div>`;}).join("")}</div>`;
+    return `<div class="item" style="flex-direction:column;align-items:stretch;gap:9px"><div style="display:flex;align-items:center;gap:11px"><div class="ic" style="background:#FFF4E5;color:var(--amber)">🎯</div><div class="it-main"><div class="it-name">${esc(g.name||t("f_gname"))}</div>${subHTML(g.note?esc(g.note):"",authBit(g))}</div><button class="it-btn" data-ed="goal:${g.id}" aria-label="${lang==="ru"?"Изменить":"Өңдеу"}">✎</button></div><div class="bar"><i style="width:${pct}%;background:var(--green)"></i></div><div class="prog"><span>${fmt(g.saved)} / ${fmt(g.target)}</span><span>${pct}%</span></div><button class="pill" style="align-self:flex-start" data-save="${g.id}">➕ ${t("deposit")}</button></div>`;}).join("")}</div>`;
 }
 function addToGoal(id){const g=state.goal.find(x=>x.id===id);if(!g)return;
   openModal(t("deposit"),[{key:"add",label:(lang==="ru"?"Сколько добавить? (₸)":"Қанша қосасыз? (₸)"),type:"number"}],(v)=>{const a=num(v.add);if(a>0){g.saved=(+g.saved||0)+a;render();pUpsert("goal",g);toast(lang==="ru"?"Добавлено ✓":"Қосылды ✓");}closeModal();});}
@@ -1599,6 +1602,7 @@ const __syncEl=$("sync");if(__syncEl){__syncEl.style.cursor="pointer";__syncEl.a
 /* шөпті жасау (желмен тербелетін) */
 function buildGrass(){
   const g=document.getElementById("grass");if(!g)return;
+  try{if(getComputedStyle(g).display==="none"){g.innerHTML="";return;}}catch(e){}  /* фон суреті қосулы — шөп жасырын, бекер DOM керек емес */
   const greens=["#5BAE4E","#6FBF5C","#4E9E45","#7FCB69","#58A84C","#86CF72","#469A3E"];
   const W=window.innerWidth||360, n=Math.max(20,Math.round(W/15));
   let h="";
